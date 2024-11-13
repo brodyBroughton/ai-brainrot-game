@@ -5,7 +5,7 @@ from typing import Dict, List
 # Add final boss location
 RIZZLERS_CASTLE = {
     "description": "You've made it to the legendary Rizzler's Castle fr fr! The ultimate W awaits... if you can handle it 👑",
-    "connections": ["Diddy's House"],  
+    "connections": [""],  
     "enemies": ["The Rizzler"]
 }
 # Add GenZ brainrot items
@@ -57,22 +57,22 @@ ITEM_EFFECTS = {
 LOCATIONS = {
     "Baby Gronk's House": {
         "description": "Nah fr fr, you're in Baby Gronk's bussin mansion rn. The whole place lowkey smells like protein shakes and TikTok clout 💯. Livvy Dunne poster hittin different on the wall no cap.",
-        "connections": ["Ohio", "Talk Tuah Podcast Set"],
+        "connections": ["Talk Tuah Podcast Set","Ohio", "Diddy's House"],
         "enemies": ["Baby Gronk", "Freakbob"]
     },
     "Ohio": {
         "description": "Ong you're in Ohio rn 💀 Everything here got that cursed energy frfr. No cap this place ain't bussin.",
-        "connections": ["Baby Gronk's House", "Diddy's House"],
+        "connections": ["Baby Gronk's House", "Diddy's House", "Talk Tuah Podcast Set"],
         "enemies": ["Quandale Dingle", "Ohio Resident"]
     },
     "Talk Tuah Podcast Set": {
         "description": "Sheeeesh! The legendary podcast set do be hitting different tho 🎤 Mics still warm fr fr, that's how you know it's real.",
-        "connections": ["Baby Gronk's House", "Diddy's House"],
+        "connections": ["Baby Gronk's House", "Ohio", "Diddy's House" ],
         "enemies": ["Hailey", "Jojo Siwa"]
     },
     "Diddy's House": {
         "description": "Nah this crib is actually bussin bussin fr fr. Smells like exotic oils and straight cash. Diddy's energy got the whole place on lock no cap 💅",
-        "connections": ["Ohio", "Talk Tuah Podcast Set"],
+        "connections": ["Baby Gronk's House", "Ohio", "Talk Tuah Podcast Set", ],
         "enemies": ["Diddy", "Justin Bieber"]
     }
 }
@@ -94,7 +94,7 @@ class Character:
     def _apply_class_modifiers(self):
         """Apply stat modifiers based on character class"""
         if self.char_class == "Sigma":
-            self.stats["Rizz"] += 20
+            self.stats["Rizz"] += 2000
             self.stats["Aura"] += 10
             self.stats["Skibidiness"] -= 10
         elif self.char_class == "Beta":
@@ -116,9 +116,18 @@ class Character:
 
 class Game:
 
-    def check_all_enemies_defeated(locations: Dict[str, Dict]) -> bool:
+    def check_all_enemies_defeated(self) -> bool:
         """Check if all enemies in all locations have been defeated"""
-        return all(len(location["enemies"]) == 0 for location in locations.values())
+        all_defeated = all(len(location["enemies"]) == 0 for location in self.locations.values())
+        
+        if all_defeated and self.current_location != "Rizzler's Castle":
+            delayed_print("\nNAH FR FR! YOU'VE DEFEATED ALL THE OPS! 🔥")
+            delayed_print("THE RIZZLER WANTS TO SEE YOU IN HIS CASTLE NO CAP! 👑")
+            self.locations.update({"Rizzler's Castle": RIZZLERS_CASTLE})
+            self.current_location = "Rizzler's Castle"
+            
+        return all_defeated
+
 
     def __init__(self):
         self.player = None
@@ -188,7 +197,6 @@ class Game:
                         self.locations[self.current_location]["enemies"].remove(enemy)
                         item = drops.get(enemy, f"{enemy}'s Rare W")
                         delayed_print(f"WWWW YOU GOT: {item} 🔥")
-                        self.player.inventory.append(item)
                         self.player.add_item(item)
                         
                         just_fought = True
@@ -202,7 +210,6 @@ class Game:
                         delayed_print("HOLD UP WAIT A MINUTE-")
                         time.sleep(0.5)
                         delayed_print(f"NAH FR?! YOU JUST FOUND A {found_item}! THAT'S ACTUALLY CRAZY! 🔥")
-                        self.player.inventory.append(found_item)
                         self.player.add_item(found_item)
                 
             elif choice == "2":
